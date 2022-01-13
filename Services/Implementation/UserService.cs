@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Services.Implementation
 {
-    public class UserSevice : IUserService
+    public class UserService : IUserService
     {
         private readonly IUserRepository userRepository;
 
-        public UserSevice(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository)
         {
             this.userRepository = userRepository;
         }

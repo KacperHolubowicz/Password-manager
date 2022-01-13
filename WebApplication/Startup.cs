@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Repository.Implementation;
+using Repository.Infrastructure;
+using Services.Implementation;
+using Services.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +26,18 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IServicePasswordRepository, ServicePasswordRepository>();
+            services.AddTransient<IDeviceRepository, DeviceRepository>();
+            services.AddTransient<ILoginAttemptRepository, LoginAttemptRepository>();
+            services.AddTransient<IBlockingRepository, BlockingRepository>();
+
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IServicePasswordService, ServicePasswordService>();
+            services.AddTransient<IDeviceService, DeviceService>();
+            services.AddTransient<ILoginAttemptService, LoginAttemptService>();
+            services.AddTransient<IBlockingService, BlockingService>();
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

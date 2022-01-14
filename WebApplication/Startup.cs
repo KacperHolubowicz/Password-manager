@@ -1,12 +1,18 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Repository.Implementation;
+using Repository.Infrastructure;
+using Services.Implementation;
+using Services.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace WebApplication
 {
@@ -22,6 +28,26 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Login";
+                    options.LogoutPath = "/Logout";
+                });
+            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IServicePasswordRepository, ServicePasswordRepository>();
+            services.AddTransient<IDeviceRepository, DeviceRepository>();
+            services.AddTransient<ILoginAttemptRepository, LoginAttemptRepository>();
+            services.AddTransient<IBlockingRepository, BlockingRepository>();
+
+            services.AddTransient<ISecretsService, PrimitiveSecretsService>();
+            services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IServicePasswordService, ServicePasswordService>();
+            services.AddTransient<IDeviceService, DeviceService>();
+            services.AddTransient<ILoginAttemptService, LoginAttemptService>();
+            services.AddTransient<IBlockingService, BlockingService>();
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -37,7 +63,11 @@ namespace WebApplication
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -6,7 +6,6 @@
     public class Device
     {
         public long ID { get; set; }
-        public User Owner { get; set; }
         public string Browser { get; set; }
         public string DeviceType { get; set; }
         public string OperatingSystem { get; set; }

@@ -10,8 +10,8 @@ namespace Repository.Infrastructure
     public interface IDeviceRepository
     {
         public Task<List<Device>> FindAllDevicesAsync(long userId);
-        public Task SaveDeviceAsync(Device device);
-        public Task<bool> VerifyDeviceAsync(Device device);
+        public Task SaveDeviceAsync(long userId, Device device);
+        public Task<bool> VerifyDeviceAsync(long ownerId, Device device);
         public Task DeleteUserWithDevices(long userId);
     }
 }

@@ -8,7 +8,7 @@
             return new Domain.Models.ServicePassword()
             {
                 Description = passwordPost.Description,
-                Password = passwordPost.Password
+                //Password = passwordPost.Password
             };
         }
 

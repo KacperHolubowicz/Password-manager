@@ -32,6 +32,7 @@ namespace WebApplication
             services.AddTransient<ILoginAttemptRepository, LoginAttemptRepository>();
             services.AddTransient<IBlockingRepository, BlockingRepository>();
 
+            services.AddTransient<ISecretsService, PrimitiveSecretsService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IServicePasswordService, ServicePasswordService>();
             services.AddTransient<IDeviceService, DeviceService>();

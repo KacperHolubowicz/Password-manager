@@ -13,6 +13,7 @@ namespace Domain.Models
         public string Email { get; set; }
         public byte[] Password { get; set; }
         public byte[] MasterPassword { get; set; }
+        public byte[] Salt { get; set; }
         public List<ServicePassword> ServicePasswords { get; set; }
         public List<Device> Devices { get; set; }
     }

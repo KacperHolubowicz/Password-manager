@@ -9,15 +9,21 @@ namespace Services.Implementation
     public class UserService : IUserService
     {
         private readonly IUserRepository userRepository;
+        private readonly ISecretsService secretsService;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, ISecretsService secretsService)
         {
             this.userRepository = userRepository;
+            this.secretsService = secretsService;
         }
 
         public async Task AddUserAsync(UserPostDTO user)
         {
-            await userRepository.AddUserAsync(UserStaticMapper.GetUserFromDTO(user));
+            User userToAdd = UserStaticMapper.GetUserFromDTO(user);
+            userToAdd.Salt = secretsService.GenerateSalt();
+            userToAdd.Password = secretsService.HashUserPassword(user.Password, userToAdd.Salt);
+            userToAdd.MasterPassword = secretsService.HashMasterPassword(user.MasterPassword, userToAdd.Salt);
+            await userRepository.AddUserAsync(userToAdd);
         }
 
         public async Task DeleteUserAsync(long userId)
@@ -29,6 +35,12 @@ namespace Services.Implementation
         {
             User foundUser = await userRepository.FindUserAsync(userId);
             return UserStaticMapper.GetDTOFromUser(foundUser);
+        }
+
+        public async Task<UserGetDTO> LoginUser(string login, string passwordPlainText)
+        {
+            var user = await secretsService.VerifyCredentials(login, passwordPlainText);
+            return user;
         }
     }
 }

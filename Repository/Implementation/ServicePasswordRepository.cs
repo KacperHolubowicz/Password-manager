@@ -21,15 +21,16 @@ namespace Repository.Implementation
         public async Task CreatePasswordAsync(long ownerId, ServicePassword password)
         {
             string query = "INSERT INTO ServicePassword " +
-                "(UserID, Description, Password) VALUES " +
-                "(@UserId, @Description, @Password)";
+                "(UserID, Description, Password, IV) VALUES " +
+                "(@UserId, @Description, @Password, @IV)";
 
             using SqliteConnection conn = GetConnection();
             object parameters = new
             {
                 UserId = ownerId,
                 Description = password.Description,
-                Password = password.Password
+                Password = password.Password,
+                IV = password.IV
             };
             await conn.QueryAsync(query, parameters);
         }
@@ -65,7 +66,7 @@ namespace Repository.Implementation
         public async Task UpdatePasswordAsync(ServicePassword password, long passwordId)
         {
             string query = "UPDATE ServicePassword SET Description = @Description, " +
-                "Password = @Password WHERE ID = @PasswordId";
+                "Password = @Password, IV = @IV WHERE ID = @PasswordId";
 
             using SqliteConnection conn = GetConnection();
             object parameters = new

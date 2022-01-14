@@ -8,9 +8,7 @@
             {
                 Username = userPost.Username,
                 Login = userPost.Login,
-                Email = userPost.Email,
-                Password = userPost.Password,
-                MasterPassword = userPost.MasterPassword
+                Email = userPost.Email
             };
         }
 

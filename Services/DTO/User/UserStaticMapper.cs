@@ -18,7 +18,6 @@
             {
                 ID = user.ID,
                 Email = user.Email,
-                Login = user.Login,
                 Username = user.Username
             };
         }

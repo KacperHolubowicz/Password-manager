@@ -13,6 +13,8 @@ namespace Repository.Infrastructure
         public Task DeleteUserAsync(long userId);
         public Task<User> VerifyUserWithCredentials(string login, byte[] userPassword);
         public Task<bool> VerifyMasterPassword(long userId, byte[] masterPassword);
+        public Task<byte[]> GetSaltById(long userId);
         public Task<byte[]> GetSaltByLogin(string login);
+
     }
 }

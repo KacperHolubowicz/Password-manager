@@ -88,12 +88,24 @@ namespace Repository.Implementation
             return user;
         }
 
+        public async Task<byte[]> GetSaltById(long userId)
+        {
+            string query = "SELECT Salt FROM USER " +
+                "WHERE ID = @UserId";
+
+            object parameters = new {UserId = userId};
+            using SqliteConnection conn = GetConnection();
+
+            byte[] salt = await conn.QuerySingleOrDefaultAsync<byte[]>(query, parameters);
+            return salt;
+        }
+
         public async Task<byte[]> GetSaltByLogin(string login)
         {
             string query = "SELECT Salt FROM USER " +
                 "WHERE Login = @Login";
 
-            object parameters = new {Login = login};
+            object parameters = new { Login = login };
             using SqliteConnection conn = GetConnection();
 
             byte[] salt = await conn.QuerySingleOrDefaultAsync<byte[]>(query, parameters);

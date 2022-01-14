@@ -10,7 +10,6 @@ namespace Services.DTO.User
     {
         public long ID { get; set; }
         public string Username { get; set; }
-        public string Login { get; set; }
         public string Email { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿@model UserLoginVM
 @{
+    var msg = ViewData["LoginError"];
 }
 
 <h3 class="display-4">Login</h3>
@@ -21,5 +22,10 @@
             </div>
             <input type="submit" name="Login" class="btn btn-primary" />
         </form>
+        <span />
+        @if (msg != null)
+        {
+            <span class="error text-danger">@msg</span>
+        }
     </div>
 </div>

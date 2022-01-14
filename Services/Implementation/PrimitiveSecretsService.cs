@@ -82,9 +82,9 @@ namespace Services.Implementation
             return UserStaticMapper.GetDTOFromUser(foundUser);
         }
 
-        public async Task<bool> VerifyMasterPassword(long id, string login, string masterPasswordPlainText)
+        public async Task<bool> VerifyMasterPassword(long id, string masterPasswordPlainText)
         {
-            byte[] salt = await userRepository.GetSaltByLogin(login);
+            byte[] salt = await userRepository.GetSaltById(id);
             byte[] password = HashMasterPassword(masterPasswordPlainText, salt);
             bool verified = await userRepository.VerifyMasterPassword(id, password);
             return verified;

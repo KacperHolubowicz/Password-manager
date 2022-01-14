@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace WebApplication
 {
@@ -26,6 +28,12 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Login";
+                    options.LogoutPath = "/Logout";
+                });
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IServicePasswordRepository, ServicePasswordRepository>();
             services.AddTransient<IDeviceRepository, DeviceRepository>();
@@ -33,6 +41,7 @@ namespace WebApplication
             services.AddTransient<IBlockingRepository, BlockingRepository>();
 
             services.AddTransient<ISecretsService, PrimitiveSecretsService>();
+            services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IServicePasswordService, ServicePasswordService>();
             services.AddTransient<IDeviceService, DeviceService>();
@@ -54,7 +63,11 @@ namespace WebApplication
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

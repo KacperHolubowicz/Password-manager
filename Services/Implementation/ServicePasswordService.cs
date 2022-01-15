@@ -13,16 +13,20 @@ namespace Services.Implementation
     public class ServicePasswordService : IServicePasswordService
     {
         private readonly IServicePasswordRepository passwordRepository;
+        private readonly ISecretsService secretsService;
 
-        public ServicePasswordService(IServicePasswordRepository passwordRepository)
+        public ServicePasswordService(IServicePasswordRepository passwordRepository
+            , ISecretsService secretsService)
         {
             this.passwordRepository = passwordRepository;
+            this.secretsService = secretsService;
         }
 
-        public async Task CreatePasswordAsync(long ownerId, ServicePasswordPostDTO password)
+        public async Task CreatePasswordAsync(long ownerId, ServicePasswordPostDTO password, string masterKey)
         {
             await passwordRepository.CreatePasswordAsync(
-                ownerId, ServicePasswordStaticMapper.GetPasswordFromDTO(password)
+                ownerId, 
+                ServicePasswordStaticMapper.GetPasswordFromDTO(password, secretsService, masterKey)
                 );
         }
 
@@ -44,10 +48,10 @@ namespace Services.Implementation
                 .ToList();
         }
 
-        public async Task UpdatePasswordAsync(ServicePasswordPutDTO password, long passwordId)
+        public async Task UpdatePasswordAsync(ServicePasswordPutDTO password, long passwordId, string masterKey)
         {
             await passwordRepository.UpdatePasswordAsync(
-                ServicePasswordStaticMapper.GetPasswordFromDTO(password), passwordId
+                ServicePasswordStaticMapper.GetPasswordFromDTO(password, secretsService, masterKey), passwordId
                 );
         }
     }

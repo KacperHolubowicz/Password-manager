@@ -1,7 +1,18 @@
 ﻿@{
     ViewData["Title"] = "Password Manager";
+    var deviceMsg = TempData["DeviceMessage"];
 }
 
 <div class="text-center">
+    @if (User.Identity.IsAuthenticated)
+    {
+        string username = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+        <h1>Good to see you again, @username</h1>
+    }
     <h1 class="display-4">Welcome to the password manager</h1>
+
+    @if(deviceMsg != null)
+            {
+                <span class="text-info">@deviceMsg</span>
+            }
 </div>

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Services.DTO.Blocking;
+using Services.DTO.Device;
 using Services.DTO.LoginAttempt;
 using Services.DTO.User;
 using Services.Infrastructure;
@@ -9,7 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Wangkanai.Detection.Services;
 using WebApplication.ViewModels.User;
+using IDeviceService = Services.Infrastructure.IDeviceService;
 
 namespace WebApplication.Controllers
 {
@@ -19,27 +22,32 @@ namespace WebApplication.Controllers
         private readonly IConfiguration configuration;
         private readonly IUserService userService;
         private readonly ILoginAttemptService loginAttemptService;
+        private readonly IDetectionService detectionService;
         private readonly IAuthService authService;
         private readonly IBlockingService blockingService;
+        private readonly IDeviceService deviceService;
 
         public LoginController(IConfiguration configuration, IUserService userService, 
-            ILoginAttemptService loginAttemptService,
-            IAuthService authService, IBlockingService blockingService)
+            ILoginAttemptService loginAttemptService, IDetectionService detectionService,
+            IAuthService authService, IBlockingService blockingService,
+            IDeviceService deviceService)
         {
             this.configuration = configuration;
             this.userService = userService;
             this.loginAttemptService = loginAttemptService;
+            this.detectionService = detectionService;
             this.authService = authService;
             this.blockingService = blockingService;
+            this.deviceService = deviceService;
         }
 
         public IActionResult Index()
         {
             return View();
         }
-        //TODO sprawdzanie blokady przed logowaniem, kontrola device
+
         [HttpPost]
-        public async Task<IActionResult> Login(UserLoginVM userLogin)
+        public async Task<IActionResult> Index(UserLoginVM userLogin)
         {
             if (!ModelState.IsValid)
             {
@@ -47,6 +55,14 @@ namespace WebApplication.Controllers
             }
 
             string remoteIp = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+            bool isBlocked = await blockingService.CheckIfCurrentlyBlocked(remoteIp);
+            if(isBlocked)
+            {
+                ViewData["LoginError"] = "You've still got time block for logging in.";
+                return View();
+            }
+
             UserGetDTO user = await userService.LoginUser(userLogin.Login, userLogin.Password);
             await loginAttemptService.SaveAttemptsAsync(new LoginAttemptPostDTO()
             {
@@ -84,12 +100,29 @@ namespace WebApplication.Controllers
                 }
 
                 ViewData["LoginError"] = errorMessage;
-                return View("Index");
+                return View();
             }
             else
             {
+                string deviceType = detectionService.Device.Type.ToString();
+                string browser = detectionService.Browser.Name.ToString();
+                string system = detectionService.Platform.Name.ToString();
+                DevicePostDTO device = new DevicePostDTO()
+                {
+                    IpAddress = remoteIp,
+                    Browser = browser,
+                    DeviceType = deviceType,
+                    OperatingSystem = system
+                };
+
+                bool isKnown = await deviceService.VerifyDeviceAsync(user.ID, device);
+                if(!isKnown)
+                {
+                    await deviceService.SaveDeviceAsync(user.ID, device);
+                    TempData["DeviceMessage"] = "A new device has been detected and saved!";
+                }
                 await HttpContext.SignInAsync(authService.CreateClaims(user));
-                return Redirect("../");
+                return RedirectToAction("Index", "Home");
             }
         }
 

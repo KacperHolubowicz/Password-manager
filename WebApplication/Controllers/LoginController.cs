@@ -46,6 +46,7 @@ namespace WebApplication.Controllers
             return View();
         }
 
+        //todo wyczyscic ten chlew
         [HttpPost]
         public async Task<IActionResult> Index(UserLoginVM userLogin)
         {
@@ -159,10 +160,11 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
+        [ActionName("Logout")]
         public async Task<IActionResult> LogoutAsync()
         {
             await HttpContext.SignOutAsync();
-            return RedirectToPage("Index", "Home");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

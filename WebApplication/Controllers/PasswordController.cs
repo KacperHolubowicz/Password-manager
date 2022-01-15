@@ -44,10 +44,10 @@ namespace WebApplication.Controllers
             return View();
         }
 
-        //TODO zapytanie o master password
         [HttpPost]
         public async Task<IActionResult> Create(PasswordCreateVM passwordCreate)
         {
+
             ServicePasswordPostDTO passwordPost = new ServicePasswordPostDTO()
             {
                 Description = passwordCreate.Description,
@@ -55,9 +55,19 @@ namespace WebApplication.Controllers
             };
 
             long userId = GetUserID();
-            await passwordService.CreatePasswordAsync(userId, passwordPost, "LiXoWbbB");
+            string providedMasterPass = passwordCreate.MasterPassword;
+
+            bool verified = await secretsService.VerifyMasterPassword(userId, providedMasterPass);
+            if(!verified)
+            {
+                ViewData["MasterError"] = "Invalid master password";
+                return View();
+            }
+
+            await passwordService.CreatePasswordAsync(userId, passwordPost, providedMasterPass);
             return RedirectToAction(nameof(Index));
         }
+        //TODO edit show delete wraz z pytaniem o master passworda - weryfikacja ilosci podan? nie wiadomo 
 
         //TODO lepsza obsluga przy bledach/zerowym id
         private long GetUserID()

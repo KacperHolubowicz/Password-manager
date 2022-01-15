@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApplication.ViewModels.User;
+using WebApplication.ViewModels.ServicePassword;
 
 namespace WebApplication.Controllers
 {
@@ -31,9 +31,7 @@ namespace WebApplication.Controllers
             List<PasswordVM> passwordsVM = passwords.Select(p => new PasswordVM()
             {
                 ID = p.ID,
-                Description = p.Description,
-                EncryptedPassword = Convert.ToBase64String(p.Password),
-                IV = p.IV
+                Description = p.Description
             }).ToList();
 
             return View(passwordsVM);
@@ -68,6 +66,44 @@ namespace WebApplication.Controllers
             return RedirectToAction(nameof(Index));
         }
         //TODO edit show delete wraz z pytaniem o master passworda - weryfikacja ilosci podan? nie wiadomo 
+        //TODO BARDZO WAZNE upewnic sie ze nie ma accessu do cudzych hasel
+
+        public async Task<IActionResult> Edit(long id)
+        {
+            ServicePasswordGetDTO passwordGetDTO = await passwordService.FindPasswordByIdAsync(id);
+            PasswordEditVM passwordVM = new PasswordEditVM()
+            {
+                ID = id,
+                Description = passwordGetDTO.Description,
+                Password = "",
+                MasterPassword = ""
+            };
+
+            return View(passwordVM);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(PasswordEditVM passwordEdit)
+        {
+            ServicePasswordPutDTO passwordPut = new ServicePasswordPutDTO()
+            {
+                Description = passwordEdit.Description,
+                Password = passwordEdit.Password
+            };
+
+            long userId = GetUserID();
+            string providedMasterPass = passwordEdit.MasterPassword;
+
+            bool verified = await secretsService.VerifyMasterPassword(userId, providedMasterPass);
+            if (!verified)
+            {
+                ViewData["MasterError"] = "Invalid master password";
+                return View();
+            }
+
+            await passwordService.UpdatePasswordAsync(passwordPut, passwordEdit.ID, providedMasterPass);
+            return RedirectToAction(nameof(Index));
+        }
 
         //TODO lepsza obsluga przy bledach/zerowym id
         private long GetUserID()

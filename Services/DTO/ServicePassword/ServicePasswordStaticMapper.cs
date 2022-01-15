@@ -17,14 +17,18 @@ namespace Services.DTO.ServicePassword
                 Password = passwordAndIv.Item1
             };
         }
-        //TODO fix put dto
+
         public static Domain.Models.ServicePassword GetPasswordFromDTO
             (ServicePasswordPutDTO passwordPut, ISecretsService secretsService, string masterKey)
         {
+            Tuple<byte[], byte[]> passwordAndIv =
+                secretsService.CipherServicePassword(passwordPut.Password, masterKey);
+
             return new Domain.Models.ServicePassword()
             {
                 Description = passwordPut.Description,
-                Password = passwordPut.Password
+                Password = passwordAndIv.Item1,
+                IV = passwordAndIv.Item2
             };
         }
 

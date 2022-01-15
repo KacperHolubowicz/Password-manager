@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebApplication.ViewModels.User
+namespace WebApplication.ViewModels.ServicePassword
 {
     public class PasswordVM
     {
@@ -12,9 +12,5 @@ namespace WebApplication.ViewModels.User
 
         [Display(Name = "Service name or URL")]
         public string Description { get; set; }
-
-        [Display(Name = "Encrypted password")]
-        public string EncryptedPassword { get; set; }
-        public byte[] IV { get; set; }
     }
 }

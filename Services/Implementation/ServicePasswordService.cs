@@ -48,6 +48,12 @@ namespace Services.Implementation
                 .ToList();
         }
 
+        public async Task<ServicePasswordGetDTO> FindPasswordByIdAsync(long passwordId)
+        {
+            ServicePassword password = await passwordRepository.FindPasswordById(passwordId);
+            return ServicePasswordStaticMapper.GetDTOFromPassword(password);
+        }
+
         public async Task UpdatePasswordAsync(ServicePasswordPutDTO password, long passwordId, string masterKey)
         {
             await passwordRepository.UpdatePasswordAsync(

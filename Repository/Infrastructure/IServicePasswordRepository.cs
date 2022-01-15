@@ -10,6 +10,7 @@ namespace Repository.Infrastructure
     public interface IServicePasswordRepository
     {
         public Task<List<ServicePassword>> FindAllPasswordsAsync(long userId);
+        public Task<ServicePassword> FindPasswordById(long passwordId);
         public Task CreatePasswordAsync(long ownerId, ServicePassword password);
         public Task UpdatePasswordAsync(ServicePassword password, long passwordId);
         public Task DeletePasswordAsync(long passwordId);

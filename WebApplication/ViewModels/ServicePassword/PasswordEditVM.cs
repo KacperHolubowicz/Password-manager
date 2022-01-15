@@ -1,16 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace WebApplication.ViewModels.User
+namespace WebApplication.ViewModels.ServicePassword
 {
-    //TODO uporzadkowac klasy z view models
-    public class PasswordCreateVM
+    public class PasswordEditVM
     {
+        public long ID { get; set; }
+
         [Required]
         [Display(Name = "Service name or URL")]
         public string Description { get; set; }
 
         [Required]
-        [Display(Name = "Password for that service")]
+        [Display(Name = "New password for that service")]
         public string Password { get; set; }
 
         [Required]

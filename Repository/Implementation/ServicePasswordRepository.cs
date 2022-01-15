@@ -63,6 +63,16 @@ namespace Repository.Implementation
             return passwords.ToList();
         }
 
+        public async Task<ServicePassword> FindPasswordById(long passwordId)
+        {
+            string query = "SELECT * FROM ServicePassword SP WHERE SP.ID = @PassId";
+
+            using SqliteConnection conn = GetConnection();
+            object parameters = new { PassId = passwordId };
+            ServicePassword password = await conn.QueryFirstOrDefaultAsync<ServicePassword>(query, parameters);
+            return password;
+        }
+
         public async Task UpdatePasswordAsync(ServicePassword password, long passwordId)
         {
             string query = "UPDATE ServicePassword SET Description = @Description, " +
@@ -73,7 +83,8 @@ namespace Repository.Implementation
             {
                 Description = password.Description,
                 Password = password.Password,
-                PasswordId = passwordId
+                PasswordId = passwordId,
+                IV = password.IV
             };
             await conn.QueryAsync(query, parameters);
         }

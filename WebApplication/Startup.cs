@@ -27,6 +27,15 @@ namespace WebApplication
 
         public void ConfigureServices(IServiceCollection services)
         {
+            // Two services needed by Wangkanai Detection
+            services.AddDetection();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             services.AddControllersWithViews();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -61,7 +70,7 @@ namespace WebApplication
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseStaticFiles();
-
+            app.UseDetection();
             app.UseRouting();
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {

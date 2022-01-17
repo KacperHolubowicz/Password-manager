@@ -30,14 +30,14 @@ namespace Services.Implementation
                 );
         }
 
-        public async Task DeletePasswordAsync(long passwordId)
+        public async Task DeletePasswordAsync(long ownerId, long passwordId)
         {
-            await passwordRepository.DeletePasswordAsync(passwordId);
+            await passwordRepository.DeletePasswordAsync(ownerId, passwordId);
         }
 
         public async Task DeleteUserWithPasswordsAsync(long userId)
         {
-            await passwordRepository.DeletePasswordAsync(userId);
+            await passwordRepository.DeleteUserWithPasswordsAsync(userId);
         }
 
         public async Task<List<ServicePasswordGetDTO>> FindAllPasswordsAsync(long userId)
@@ -48,16 +48,18 @@ namespace Services.Implementation
                 .ToList();
         }
 
-        public async Task<ServicePasswordGetDTO> FindPasswordByIdAsync(long passwordId)
+        public async Task<ServicePasswordGetDTO> FindPasswordByIdAsync(long ownerId, long passwordId)
         {
-            ServicePassword password = await passwordRepository.FindPasswordById(passwordId);
+            ServicePassword password = await passwordRepository.FindPasswordById(ownerId, passwordId);
             return ServicePasswordStaticMapper.GetDTOFromPassword(password);
         }
 
-        public async Task UpdatePasswordAsync(ServicePasswordPutDTO password, long passwordId, string masterKey)
+        public async Task UpdatePasswordAsync(ServicePasswordPutDTO password, long ownerId, long passwordId, string masterKey)
         {
             await passwordRepository.UpdatePasswordAsync(
-                ServicePasswordStaticMapper.GetPasswordFromDTO(password, secretsService, masterKey), passwordId
+                ServicePasswordStaticMapper.GetPasswordFromDTO(password, secretsService, masterKey), 
+                ownerId,
+                passwordId
                 );
         }
     }

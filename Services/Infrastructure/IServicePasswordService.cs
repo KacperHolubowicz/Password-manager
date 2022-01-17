@@ -10,10 +10,10 @@ namespace Services.Infrastructure
     public interface IServicePasswordService
     {
         public Task<List<ServicePasswordGetDTO>> FindAllPasswordsAsync(long userId);
-        public Task<ServicePasswordGetDTO> FindPasswordByIdAsync(long passwordId);
+        public Task<ServicePasswordGetDTO> FindPasswordByIdAsync(long ownerId, long passwordId);
         public Task CreatePasswordAsync(long ownerId, ServicePasswordPostDTO password, string masterKey);
-        public Task UpdatePasswordAsync(ServicePasswordPutDTO password, long passwordId, string masterKey);
-        public Task DeletePasswordAsync(long passwordId);
+        public Task UpdatePasswordAsync(ServicePasswordPutDTO password, long ownerId, long passwordId, string masterKey);
+        public Task DeletePasswordAsync(long ownerId, long passwordId);
         public Task DeleteUserWithPasswordsAsync(long userId);
     }
 }

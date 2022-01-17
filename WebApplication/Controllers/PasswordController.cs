@@ -67,10 +67,12 @@ namespace WebApplication.Controllers
         }
         //TODO edit show delete wraz z pytaniem o master passworda - weryfikacja ilosci podan? nie wiadomo 
         //TODO BARDZO WAZNE upewnic sie ze nie ma accessu do cudzych hasel
+        //TODO komunikaty/wyjatki zeby zwrocic np 403 przy dobieraniu sie do cudzych hasel
 
         public async Task<IActionResult> Edit(long id)
         {
-            ServicePasswordGetDTO passwordGetDTO = await passwordService.FindPasswordByIdAsync(id);
+            long userId = GetUserID();
+            ServicePasswordGetDTO passwordGetDTO = await passwordService.FindPasswordByIdAsync(userId, id);
             PasswordEditVM passwordVM = new PasswordEditVM()
             {
                 ID = id,
@@ -101,8 +103,24 @@ namespace WebApplication.Controllers
                 return View();
             }
 
-            await passwordService.UpdatePasswordAsync(passwordPut, passwordEdit.ID, providedMasterPass);
+            await passwordService.UpdatePasswordAsync(passwordPut, userId, passwordEdit.ID, providedMasterPass);
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Show(long id)
+        {
+            long userId = GetUserID();
+            ServicePasswordGetDTO passwordGetDTO = await passwordService.FindPasswordByIdAsync(userId, id);
+            PasswordShowVM passwordVM = new PasswordShowVM()
+            {
+                ID = id,
+                Description = passwordGetDTO.Description,
+                Password = Convert.ToBase64String(passwordGetDTO.Password),
+                MasterPassword = "",
+                IV = passwordGetDTO.IV
+            };
+
+            return View(passwordVM);
         }
 
         //TODO lepsza obsluga przy bledach/zerowym id

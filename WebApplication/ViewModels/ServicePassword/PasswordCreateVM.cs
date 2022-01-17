@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using WebApplication.ViewModels.Attributes;
 
 namespace WebApplication.ViewModels.ServicePassword
 {
@@ -10,6 +11,7 @@ namespace WebApplication.ViewModels.ServicePassword
 
         [Required]
         [Display(Name = "Password for that service")]
+        [StrongPassword(8, 28)]
         public string Password { get; set; }
 
         [Required]

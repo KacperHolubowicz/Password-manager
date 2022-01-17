@@ -21,13 +21,13 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Passwords" asp-action="Index">Your saved passwords</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Password" asp-action="Index">Your saved passwords</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Passwords" asp-action="Create">Add new password</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Password" asp-action="Create">Add new password</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Devices" asp-action="Index">Your devices</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Device" asp-action="Index">Your devices</a>
                             </li>
                         }
                     </ul>

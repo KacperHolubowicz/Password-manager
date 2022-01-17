@@ -9,6 +9,7 @@ using Services.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Wangkanai.Detection.Services;
 using WebApplication.ViewModels.User;
@@ -46,6 +47,8 @@ namespace WebApplication.Controllers
             return View();
         }
 
+        //todo wyczyscic ten chlew
+        //todo wyswietlac ile zostalo blokady? optional
         [HttpPost]
         public async Task<IActionResult> Index(UserLoginVM userLogin)
         {
@@ -54,7 +57,8 @@ namespace WebApplication.Controllers
                 return View();
             }
 
-            string remoteIp = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+            string remoteIp = Request.HttpContext.Connection.RemoteIpAddress.MapToIPv6().ToString();
+            await Delay(3000);
 
             bool isBlocked = await blockingService.CheckIfCurrentlyBlocked(remoteIp);
             if(isBlocked)
@@ -159,10 +163,16 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost]
+        [ActionName("Logout")]
         public async Task<IActionResult> LogoutAsync()
         {
             await HttpContext.SignOutAsync();
-            return RedirectToPage("Index", "Home");
+            return RedirectToAction("Index", "Home");
+        }
+
+        private async Task Delay(int duration)
+        {
+            await Task.Delay(duration);
         }
     }
 }

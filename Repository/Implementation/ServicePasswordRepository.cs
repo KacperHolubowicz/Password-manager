@@ -35,12 +35,12 @@ namespace Repository.Implementation
             await conn.QueryAsync(query, parameters);
         }
 
-        public async Task DeletePasswordAsync(long passwordId)
+        public async Task DeletePasswordAsync(long ownerId, long passwordId)
         {
-            string query = "DELETE FROM ServicePassword SP WHERE SP.ID = @PassId";
+            string query = "DELETE FROM ServicePassword WHERE ID = @PassId AND UserID = @UserId";
 
             using SqliteConnection conn = GetConnection();
-            object parameters = new { PassId = passwordId };
+            object parameters = new { PassId = passwordId, UserId = ownerId };
             await conn.QueryAsync(query, parameters);
         }
 
@@ -63,17 +63,29 @@ namespace Repository.Implementation
             return passwords.ToList();
         }
 
-        public async Task UpdatePasswordAsync(ServicePassword password, long passwordId)
+        public async Task<ServicePassword> FindPasswordById(long ownerId, long passwordId)
+        {
+            string query = "SELECT * FROM ServicePassword SP WHERE SP.ID = @PassId AND SP.UserID = @UserId";
+
+            using SqliteConnection conn = GetConnection();
+            object parameters = new { PassId = passwordId, UserId = ownerId };
+            ServicePassword password = await conn.QueryFirstOrDefaultAsync<ServicePassword>(query, parameters);
+            return password;
+        }
+
+        public async Task UpdatePasswordAsync(ServicePassword password, long ownerId, long passwordId)
         {
             string query = "UPDATE ServicePassword SET Description = @Description, " +
-                "Password = @Password, IV = @IV WHERE ID = @PasswordId";
+                "Password = @Password, IV = @IV WHERE ID = @PasswordId AND UserID = @OwnerId";
 
             using SqliteConnection conn = GetConnection();
             object parameters = new
             {
                 Description = password.Description,
                 Password = password.Password,
-                PasswordId = passwordId
+                PasswordId = passwordId,
+                IV = password.IV,
+                OwnerId = ownerId
             };
             await conn.QueryAsync(query, parameters);
         }

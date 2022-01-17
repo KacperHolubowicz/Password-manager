@@ -29,7 +29,7 @@ namespace Repository.Implementation
 
         public async Task<List<Device>> FindAllDevicesAsync(long userId)
         {
-            string query = "SELECT * FROM Device WHERE Debice.UserID = @UserId";
+            string query = "SELECT * FROM Device WHERE Device.UserID = @UserId";
 
             using SqliteConnection conn = GetConnection();
             object parameters = new { UserId = userId };
@@ -59,7 +59,8 @@ namespace Repository.Implementation
         {
             string query = "SELECT COUNT(1) FROM Device WHERE " +
                 "Browser = @Browser AND DeviceType = @DeviceType AND " +
-                "OperatingSystem = @System AND IpAddress = @Ip LIMIT 1";
+                "OperatingSystem = @System AND IpAddress = @Ip " +
+                "AND UserID = @UserId LIMIT 1";
 
             using SqliteConnection conn = GetConnection();
             object parameters = new
@@ -67,7 +68,8 @@ namespace Repository.Implementation
                 Browser = device.Browser,
                 DeviceType = device.DeviceType,
                 System = device.OperatingSystem,
-                Ip = device.IpAddress
+                Ip = device.IpAddress,
+                UserId = ownerId
             };
             return await conn.QuerySingleAsync<bool>(query, parameters);
         }

@@ -38,7 +38,8 @@ namespace Services.DTO.ServicePassword
             {
                 ID = password.ID,
                 Description = password.Description,
-                Password = password.Password
+                Password = password.Password,
+                IV = password.IV
             };
         }
     }

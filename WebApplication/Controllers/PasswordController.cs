@@ -45,6 +45,10 @@ namespace WebApplication.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(PasswordCreateVM passwordCreate)
         {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
 
             ServicePasswordPostDTO passwordPost = new ServicePasswordPostDTO()
             {
@@ -87,6 +91,11 @@ namespace WebApplication.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(PasswordEditVM passwordEdit)
         {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
             ServicePasswordPutDTO passwordPut = new ServicePasswordPutDTO()
             {
                 Description = passwordEdit.Description,
@@ -110,17 +119,49 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> Show(long id)
         {
             long userId = GetUserID();
+
             ServicePasswordGetDTO passwordGetDTO = await passwordService.FindPasswordByIdAsync(userId, id);
             PasswordShowVM passwordVM = new PasswordShowVM()
             {
                 ID = id,
                 Description = passwordGetDTO.Description,
-                Password = Convert.ToBase64String(passwordGetDTO.Password),
-                MasterPassword = "",
-                IV = passwordGetDTO.IV
+                Password = "Provide master password to show password",
+                MasterPassword = ""
             };
 
             return View(passwordVM);
+        }
+
+        //TODO sprawdzic czy da sie inaczej naprawic problem z nullami w argumencie
+        [HttpPost]
+        public async Task<IActionResult> Show(PasswordShowVM passwordShowVM)
+        {
+            long userId = GetUserID();
+            string masterPassword = passwordShowVM.MasterPassword;
+            ServicePasswordGetDTO passwordVal = await passwordService.FindPasswordByIdAsync
+                (userId, passwordShowVM.ID);
+            passwordShowVM.MasterPassword = "";
+            passwordShowVM.Description = passwordVal.Description;
+            passwordShowVM.Password = "Provide master password to show password";
+
+            if (string.IsNullOrWhiteSpace(masterPassword))
+            {
+                return View(passwordShowVM);
+            }
+            
+            bool verified = await secretsService.VerifyMasterPassword(userId, masterPassword);
+            if(!verified)
+            {
+                ViewData["MasterError"] = "Invalid master password";
+                return View(passwordShowVM);
+            }
+
+            string decryptedPassword = secretsService.DecipherServicePassword(passwordVal.Password,
+                masterPassword, passwordVal.IV);
+            passwordShowVM.Password = decryptedPassword;
+            
+
+            return View(passwordShowVM);
         }
 
         //TODO lepsza obsluga przy bledach/zerowym id

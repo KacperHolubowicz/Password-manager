@@ -18,9 +18,8 @@ namespace WebApplication.ViewModels.ServicePassword
         [Display(Name = "Encrypt service's password")]
         public string Password { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Master password is required for decryption")]
         [Display(Name = "Confirm with your master password")]
         public string MasterPassword { get; set; }
-        public byte[] IV { get; set; }
     }
 }

@@ -1,0 +1,38 @@
+﻿@model WebApplication.ViewModels.ServicePassword.PasswordDeleteVM
+@{
+    var msg = ViewData["MasterError"];
+}
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Saved password</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+    </dl>
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Delete">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="MasterPassword" class="control-label"></label>
+                    <input asp-for="MasterPassword" class="form-control" type="password" />
+                    <span asp-validation-for="MasterPassword" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Delete" class="btn btn-primary" />
+                </div>
+                <a asp-action="Index">Back to List</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@if (msg != null)
+{
+    <span class="text-danger">@msg</span>
+}

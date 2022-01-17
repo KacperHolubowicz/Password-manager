@@ -69,8 +69,7 @@ namespace WebApplication.Controllers
             await passwordService.CreatePasswordAsync(userId, passwordPost, providedMasterPass);
             return RedirectToAction(nameof(Index));
         }
-        //TODO edit show delete wraz z pytaniem o master passworda - weryfikacja ilosci podan? nie wiadomo 
-        //TODO BARDZO WAZNE upewnic sie ze nie ma accessu do cudzych hasel
+        //TODO weryfikacja master passwordow? jak czas bedzie
         //TODO komunikaty/wyjatki zeby zwrocic np 403 przy dobieraniu sie do cudzych hasel
 
         public async Task<IActionResult> Edit(long id)
@@ -162,6 +161,42 @@ namespace WebApplication.Controllers
             
 
             return View(passwordShowVM);
+        }
+
+        public async Task<IActionResult> Delete(long id)
+        {
+            long userId = GetUserID();
+
+            ServicePasswordGetDTO passwordGetDTO = await passwordService.FindPasswordByIdAsync(userId, id);
+            PasswordDeleteVM passwordVM = new PasswordDeleteVM()
+            {
+                ID = id,
+                Description = passwordGetDTO.Description,
+                MasterPassword = ""
+            };
+
+            return View(passwordVM);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(PasswordDeleteVM passwordToDelete)
+        {
+            long userId = GetUserID();
+
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            bool verified = await secretsService.VerifyMasterPassword(userId, passwordToDelete.MasterPassword);
+            if (!verified)
+            {
+                ViewData["MasterError"] = "Invalid master password";
+                return View();
+            }
+
+            await passwordService.DeletePasswordAsync(userId, passwordToDelete.ID);
+            return RedirectToAction(nameof(Index));
         }
 
         //TODO lepsza obsluga przy bledach/zerowym id

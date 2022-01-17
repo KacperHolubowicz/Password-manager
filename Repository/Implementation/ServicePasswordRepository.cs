@@ -37,7 +37,7 @@ namespace Repository.Implementation
 
         public async Task DeletePasswordAsync(long ownerId, long passwordId)
         {
-            string query = "DELETE FROM ServicePassword SP WHERE SP.ID = @PassId AND SP.UserID = @UserId";
+            string query = "DELETE FROM ServicePassword WHERE ID = @PassId AND UserID = @UserId";
 
             using SqliteConnection conn = GetConnection();
             object parameters = new { PassId = passwordId, UserId = ownerId };

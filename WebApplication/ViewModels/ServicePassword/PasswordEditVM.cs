@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication.ViewModels.Attributes;
 
 namespace WebApplication.ViewModels.ServicePassword
 {
@@ -16,6 +17,7 @@ namespace WebApplication.ViewModels.ServicePassword
 
         [Required]
         [Display(Name = "New password for that service")]
+        [StrongPassword(8, 28)]
         public string Password { get; set; }
 
         [Required]

@@ -135,6 +135,7 @@ namespace WebApplication.Controllers
             return View();
         }
 
+        //todo komunikat przy nieunikalnym loginie/username/emailu
         [HttpPost]
         public async Task<IActionResult> Register(UserRegisterVM userRegister)
         {

@@ -112,6 +112,17 @@ namespace Repository.Implementation
             return salt;
         }
 
+        public async Task<bool> FindUserWithEmail(string email)
+        {
+            string query = "SELECT COUNT(1) FROM USER WHERE Email = @Email";
+
+            object parameters = new { Email = email };
+            using SqliteConnection conn = GetConnection();
+
+            bool doesEmailExist = await conn.QuerySingleAsync<bool>(query, parameters);
+            return doesEmailExist;
+        }
+
         private SqliteConnection GetConnection()
         {
             return new SqliteConnection(connectionString);

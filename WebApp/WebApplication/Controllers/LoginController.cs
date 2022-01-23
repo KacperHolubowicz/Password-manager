@@ -171,6 +171,32 @@ namespace WebApplication.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public IActionResult ForgotPassword() 
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordVM forgotPassword)
+        {
+            if(!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            string email = forgotPassword.Email;
+            bool doesEmailExist = await userService.FindUserWithEmail(email);
+
+            if(!doesEmailExist) 
+            {
+                TempData["Email"] = "There is no account connected with provided email";
+                return View();
+            }
+
+            TempData["Email"] = $"Link to password reset SHOULD HAVE BEEN sent to {email}";
+            return RedirectToAction("Index");
+        }
+
         private async Task Delay(int duration)
         {
             await Task.Delay(duration);

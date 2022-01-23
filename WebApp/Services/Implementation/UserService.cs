@@ -42,5 +42,11 @@ namespace Services.Implementation
             var user = await secretsService.VerifyCredentials(login, passwordPlainText);
             return user;
         }
+
+        public async Task<bool> FindUserWithEmail(string email)
+        {
+            bool doesExist = await userRepository.FindUserWithEmail(email);
+            return doesExist;
+        }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using Repository.Exceptions;
 
 namespace Repository.Implementation
 {
@@ -23,6 +24,8 @@ namespace Repository.Implementation
         {
             string query = "INSERT INTO USER(Username, Login, Email, Password, MasterPassword, Salt) " +
                 "VALUES(@Username, @Login, @Email, @Password, @MasterPassword, @Salt);";
+
+            await ValidateData(user);
 
             using SqliteConnection conn = GetConnection();
             object parameters = new
@@ -97,6 +100,11 @@ namespace Repository.Implementation
             using SqliteConnection conn = GetConnection();
 
             byte[] salt = await conn.QuerySingleOrDefaultAsync<byte[]>(query, parameters);
+            
+            if(salt == null)
+            {
+                throw new InvalidCredentialsException("Cannot get salt of this user");
+            }
             return salt;
         }
 
@@ -109,7 +117,23 @@ namespace Repository.Implementation
             using SqliteConnection conn = GetConnection();
 
             byte[] salt = await conn.QuerySingleOrDefaultAsync<byte[]>(query, parameters);
+
+            if(salt == null)
+            {
+                throw new InvalidCredentialsException("Cannot get salt of this user");
+            }
             return salt;
+        }
+
+        public async Task<bool> FindUserWithEmail(string email)
+        {
+            string query = "SELECT COUNT(1) FROM USER WHERE Email = @Email";
+
+            object parameters = new { Email = email };
+            using SqliteConnection conn = GetConnection();
+
+            bool doesEmailExist = await conn.QuerySingleAsync<bool>(query, parameters);
+            return doesEmailExist;
         }
 
         private SqliteConnection GetConnection()
@@ -145,12 +169,47 @@ namespace Repository.Implementation
 
             if(foundUser.ID == 0)
             {
-                return null;
+                throw new InvalidCredentialsException("Cannot find user with these credentials");
             }
 
             foundUser.ServicePasswords = passwords.Select(val => val.Value).ToList();
             foundUser.Devices = devices.Select(val => val.Value).ToList();
             return foundUser;
+        }
+
+        private async Task ValidateData(User user)
+        {
+            if(await FindUserWithEmail(user.Email)) 
+            {
+                throw new NonUniqueException("There is already a user with that email", NonUniqueFlag.Email);
+            }
+            if(await IsLoginUnique(user.Login))
+            {
+                throw new NonUniqueException("There is already a user with that login", NonUniqueFlag.Login);
+            }
+            if(await IsUsernameUnique(user.Username))
+            {
+                throw new NonUniqueException("There is already a user with that username", NonUniqueFlag.Username);
+            }
+        }
+
+        private async Task<bool> IsUsernameUnique(string username)
+        {
+            string query = "SELECT COUNT(1) FROM USER WHERE Username = @Username";
+
+            object parameters = new { Username = username };
+            SqliteConnection conn = GetConnection();
+            bool isUnique = await conn.QuerySingleAsync<bool>(query, parameters);
+            return isUnique;
+        }
+        private async Task<bool> IsLoginUnique(string login)
+        {
+            string query = "SELECT COUNT(1) FROM USER WHERE Login = @Login";
+
+            object parameters = new { Login = login };
+            SqliteConnection conn = GetConnection();
+            bool isUnique = await conn.QuerySingleAsync<bool>(query, parameters);
+            return isUnique;
         }
     }
 }

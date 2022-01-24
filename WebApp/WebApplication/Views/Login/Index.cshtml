@@ -1,6 +1,7 @@
 ﻿@model UserLoginVM
 @{
     var msg = ViewData["LoginError"];
+    var emailMsg = TempData["Email"];
 }
 
 <h3 class="display-4">Login</h3>
@@ -27,5 +28,11 @@
         {
             <span class="error text-danger">@msg</span>
         }
+        @if (emailMsg != null)
+        {
+            <span class="text-info">@emailMsg</span>
+        }
     </div>
+    @Html.ActionLink("Did you forgot your password?", "ForgotPassword")
 </div>
+

@@ -12,5 +12,6 @@ namespace Services.Infrastructure
         public Task AddUserAsync(UserPostDTO user);
         public Task DeleteUserAsync(long userId);
         public Task<UserGetDTO> LoginUser(string login, string passwordPlainText);
+        public Task<bool> FindUserWithEmail(string email);
     }
 }

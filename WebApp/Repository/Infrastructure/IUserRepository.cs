@@ -15,6 +15,7 @@ namespace Repository.Infrastructure
         public Task<bool> VerifyMasterPassword(long userId, byte[] masterPassword);
         public Task<byte[]> GetSaltById(long userId);
         public Task<byte[]> GetSaltByLogin(string login);
+        public Task<bool> FindUserWithEmail(string email);
 
     }
 }

@@ -21,12 +21,15 @@ namespace WebApplication.ViewModels.User
         public string Password { get; set; }
         [Required]
         [PasswordConfirmation]
+        [Display(Name = "Confirm password")]
         public string ConfirmPassword { get; set; }
         [Required]
         [StrongPassword(8, 40)]
+        [Display(Name = "Master password")]
         public string MasterPassword { get; set; }
         [Required]
         [MasterPasswordConfirmation]
+        [Display(Name = "Confirm master password")]
         public string ConfirmMasterPassword { get; set; }
     }
 }

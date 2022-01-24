@@ -21,7 +21,7 @@
                 <input type="password" asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-            <input type="submit" name="Login" class="btn btn-primary" />
+            <input type="submit" name="Login" class="btn btn-primary" value="Login" />
         </form>
         <span />
         @if (msg != null)
@@ -35,4 +35,3 @@
     </div>
     @Html.ActionLink("Did you forgot your password?", "ForgotPassword")
 </div>
-

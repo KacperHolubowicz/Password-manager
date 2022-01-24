@@ -45,9 +45,9 @@
                 <input type="password" asp-for="ConfirmMasterPassword" class="form-control" />
                 <span asp-validation-for="ConfirmMasterPassword" class="text-danger"></span>
             </div>
-            <input type="submit" name="Register" class="btn btn-primary" />
+            <input type="submit" name="Register" class="btn btn-primary" value="Register" />
         </form>
-        @if(nonUniqueMsg != null) 
+        @if (nonUniqueMsg != null)
         {
             <span class="error text-danger">@nonUniqueMsg</span>
         }

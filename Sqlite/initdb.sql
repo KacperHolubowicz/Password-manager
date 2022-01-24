@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS User(
   ID integer primary key,
   Username text not null unique,
   Login text not null unique,
-  Email text not null,
+  Email text not null unique,
   Password blob not null,
   MasterPassword blob not null,
   Salt blob not null

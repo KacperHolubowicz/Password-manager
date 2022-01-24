@@ -1,10 +1,6 @@
 ﻿using Repository.Infrastructure;
 using Services.DTO.Blocking;
 using Services.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Services.Implementation

@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace Services.Implementation
 {
-    //TODO lepsze wyjatki i sprawdzanie przypadkow
     public class PrimitiveSecretsService : ISecretsService
     {
         /// <summary>
@@ -67,17 +66,9 @@ namespace Services.Implementation
         public async Task<UserGetDTO> VerifyCredentials(string login, string passwordPlainText)
         {
             byte[] salt = await userRepository.GetSaltByLogin(login);
-            if(salt == null)
-            {
-                return null;
-            }
 
             byte[] password = HashUserPassword(passwordPlainText, salt);
             User foundUser = await userRepository.VerifyUserWithCredentials(login, password);
-            if(foundUser == null)
-            {
-                return null;
-            }
 
             return UserStaticMapper.GetDTOFromUser(foundUser);
         }

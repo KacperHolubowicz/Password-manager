@@ -1,5 +1,6 @@
 ﻿@model UserRegisterVM
 @{
+    var nonUniqueMsg = TempData["NonUnique"];
 }
 
 <h2 class="display-3">Register</h2>
@@ -46,5 +47,9 @@
             </div>
             <input type="submit" name="Register" class="btn btn-primary" />
         </form>
+        @if(nonUniqueMsg != null) 
+        {
+            <span class="error text-danger">@nonUniqueMsg</span>
+        }
     </div>
 </div>

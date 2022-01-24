@@ -2,6 +2,7 @@
 using Domain.Models;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
+using Repository.Exceptions;
 using Repository.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,6 +71,10 @@ namespace Repository.Implementation
             using SqliteConnection conn = GetConnection();
             object parameters = new { PassId = passwordId, UserId = ownerId };
             ServicePassword password = await conn.QueryFirstOrDefaultAsync<ServicePassword>(query, parameters);
+            if(password == null)
+            {
+                throw new UnauthorizedResourceException("You are not authorized for that resource");
+            }
             return password;
         }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Repository.Exceptions;
 using Services.DTO.ServicePassword;
 using Services.Infrastructure;
 using System;
@@ -69,13 +70,19 @@ namespace WebApplication.Controllers
             await passwordService.CreatePasswordAsync(userId, passwordPost, providedMasterPass);
             return RedirectToAction(nameof(Index));
         }
-        //TODO weryfikacja master passwordow? jak czas bedzie
-        //TODO komunikaty/wyjatki zeby zwrocic np 403 przy dobieraniu sie do cudzych hasel
 
         public async Task<IActionResult> Edit(long id)
         {
             long userId = GetUserID();
-            ServicePasswordGetDTO passwordGetDTO = await passwordService.FindPasswordByIdAsync(userId, id);
+            ServicePasswordGetDTO passwordGetDTO;
+
+            try {
+                passwordGetDTO = await passwordService.FindPasswordByIdAsync(userId, id);
+            } catch(UnauthorizedResourceException)
+            {
+                return Unauthorized();
+            }
+
             PasswordEditVM passwordVM = new PasswordEditVM()
             {
                 ID = id,
@@ -118,8 +125,15 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> Show(long id)
         {
             long userId = GetUserID();
+            ServicePasswordGetDTO passwordGetDTO;
+            
+            try {
+                passwordGetDTO = await passwordService.FindPasswordByIdAsync(userId, id);
+            } catch(UnauthorizedResourceException)
+            {
+                return Unauthorized();
+            }
 
-            ServicePasswordGetDTO passwordGetDTO = await passwordService.FindPasswordByIdAsync(userId, id);
             PasswordShowVM passwordVM = new PasswordShowVM()
             {
                 ID = id,
@@ -131,7 +145,6 @@ namespace WebApplication.Controllers
             return View(passwordVM);
         }
 
-        //TODO sprawdzic czy da sie inaczej naprawic problem z nullami w argumencie
         [HttpPost]
         public async Task<IActionResult> Show(PasswordShowVM passwordShowVM)
         {
@@ -166,8 +179,15 @@ namespace WebApplication.Controllers
         public async Task<IActionResult> Delete(long id)
         {
             long userId = GetUserID();
+            ServicePasswordGetDTO passwordGetDTO;
+            
+            try {
+                passwordGetDTO = await passwordService.FindPasswordByIdAsync(userId, id);
+            } catch(UnauthorizedResourceException)
+            {
+                return Unauthorized();
+            }
 
-            ServicePasswordGetDTO passwordGetDTO = await passwordService.FindPasswordByIdAsync(userId, id);
             PasswordDeleteVM passwordVM = new PasswordDeleteVM()
             {
                 ID = id,
@@ -199,13 +219,12 @@ namespace WebApplication.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        //TODO lepsza obsluga przy bledach/zerowym id
         private long GetUserID()
         {
             long userId = int.Parse(User.Claims.First(c => c.Type == "ID").Value);
             if(userId == 0)
             {
-                throw new Exception();
+                throw new UnauthorizedAccessException();
             }
             return userId;
         }

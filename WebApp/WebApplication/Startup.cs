@@ -36,6 +36,7 @@ namespace WebApplication
                 options.Cookie.IsEssential = true;
             });
 
+            services.AddAntiforgery();
             services.AddControllersWithViews();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -69,7 +70,7 @@ namespace WebApplication
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseDetection();
             app.UseRouting();
@@ -80,10 +81,21 @@ namespace WebApplication
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.Use(async (context, next) => 
+            {   context.Response.OnStarting(() => 
+                {
+                    context.Response.Headers.Add("Content-Security-Policy",
+                        "default-src 'self';");
+                    return Task.FromResult(0);
+                });
+                await next();
+            });
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
             });
+
         }
     }
 }

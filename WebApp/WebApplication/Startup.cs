@@ -43,6 +43,7 @@ namespace WebApplication
                 {
                     options.LoginPath = "/Login";
                     options.LogoutPath = "/Logout";
+                    options.AccessDeniedPath = "/Home/Denied";
                 });
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IServicePasswordRepository, ServicePasswordRepository>();

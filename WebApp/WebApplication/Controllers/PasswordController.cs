@@ -80,7 +80,7 @@ namespace WebApplication.Controllers
                 passwordGetDTO = await passwordService.FindPasswordByIdAsync(userId, id);
             } catch(UnauthorizedResourceException)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             PasswordEditVM passwordVM = new PasswordEditVM()
@@ -131,7 +131,7 @@ namespace WebApplication.Controllers
                 passwordGetDTO = await passwordService.FindPasswordByIdAsync(userId, id);
             } catch(UnauthorizedResourceException)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             PasswordShowVM passwordVM = new PasswordShowVM()
@@ -185,7 +185,7 @@ namespace WebApplication.Controllers
                 passwordGetDTO = await passwordService.FindPasswordByIdAsync(userId, id);
             } catch(UnauthorizedResourceException)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             PasswordDeleteVM passwordVM = new PasswordDeleteVM()
